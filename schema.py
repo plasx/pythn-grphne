@@ -68,12 +68,12 @@ class Mutation(graphene.ObjectType):
 schema = graphene.Schema(query=Query, mutation=Mutation)
 result = schema.execute(
     '''
-    mutation {
-      createPost(title: "Hello", content: "World") {
-        post {
-          title
-          content
-        }
+    {
+      users {
+        id
+        createdAt
+        username
+        avatarUrl
       }
     }
     ''',
