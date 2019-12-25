@@ -13,6 +13,10 @@ class User(graphene.ObjectType):
     id = graphene.ID(default_value=str(uuid.uuid4()))
     username = graphene.String()
     created_at = graphene.DateTime(default_value=datetime.now())
+    avatar_url = graphene.String()
+
+    def resolve_avatar_url(self, info):
+        return 'https://cloudinary.com/{}/{}'.format(self.username, self.id)
 
 
 class Query(graphene.ObjectType):
@@ -51,6 +55,8 @@ class CreatePost(graphene.Mutation):
         content = graphene.String()
 
     def mutate(self, info, title, content):
+        if info.context.get('is_anonymous'):
+            raise Exception("Not Authenticated")
         post = Post(title=title, content=content)
         return CreatePost(post=post)
 
@@ -71,7 +77,7 @@ result = schema.execute(
       }
     }
     ''',
-    variable_values={'limit': 1}
+    context={'is_anonymous': True}
 )
 
 dictResult=dict(result.data.items())
